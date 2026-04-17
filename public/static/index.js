@@ -6,6 +6,10 @@ function onWsMessage(ws, event) {
 }
 
 function initSender() {
+    document.getElementById("sender-send").addEventListener("click", sendMessage)
+}
+
+function sendMessage() {
     const message = document.getElementById("sender-message").value
     const recipient = document.getElementById("sender-recipient").value
     ws.send(JSON.stringify({

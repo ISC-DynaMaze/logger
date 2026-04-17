@@ -16,9 +16,9 @@ class LoggerAgent(Agent):
 
     async def setup(self):
         self.web.app.middlewares.append(self.index_middleware)
-        self.web.app.router.add_static("/", self.PUBLIC_DIR, name="public")
         self.web.app.router.add_get("/api/status", self.handle_api_status)
         self.web.app.router.add_get("/ws", self.handle_websocket)
+        self.web.app.router.add_static("/", self.PUBLIC_DIR, name="public")
 
         self.web.start(hostname="127.0.0.1", port=10000)
 
@@ -29,13 +29,11 @@ class LoggerAgent(Agent):
     async def index_middleware(self, request, handler):
         rel_path = Path(request.path).relative_to("/")
         full_path = self.PUBLIC_DIR / rel_path
-        if not full_path.exists():
-            return web.HTTPNotFound()
-        if full_path.is_dir():
+        if full_path.exists() and full_path.is_dir():
             full_path /= "index.html"
-            if not full_path.exists():
-                return web.HTTPNotFound()
-        return web.FileResponse(full_path)
+            if full_path.exists():
+                return web.FileResponse(full_path)
+        return await handler(request)
 
     async def handle_api_status(self, request):
         data = {
@@ -54,7 +52,6 @@ class LoggerAgent(Agent):
             async for msg in ws:
                 if msg.type == web.WSMsgType.TEXT:
                     await self.handle_ws_msg(msg.json())
-                    await ws.send_str(f"Server received: {msg.data}")
                 elif msg.type == web.WSMsgType.ERROR:
                     print(f"WS connection closed with exception {ws.exception()}")
         finally:
