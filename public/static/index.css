@@ -8,3 +8,38 @@ body {
     font-size: 12pt;
     padding: 1em;
 }
+
+.cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+
+    .card {
+        border: solid black 1px;
+        padding: 1em 2em;
+        display: flex;
+        flex-direction: column;
+        gap: .8em;
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: .4em;
+        }
+    }
+}
+
+#sender {
+    .message, .recipient {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+label {
+    font-style: italic;
+}
+
+button {
+    cursor: pointer;
+}
