@@ -63,3 +63,7 @@ class LoggerAgent(Agent):
         match msg["type"]:
             case "send":
                 self.add_behaviour(SenderBehaviour(msg["msg"], msg["to"]))
+
+    async def send_ws(self, msg: dict):
+        for ws in self.ws_clients:
+            await ws.send_json(msg)

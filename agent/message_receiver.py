@@ -1,10 +1,17 @@
+from __future__ import annotations
+
 import json
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from spade.behaviour import CyclicBehaviour
 
+if TYPE_CHECKING:
+    from agent.logger import LoggerAgent
+
 
 class MessageReceiverBehaviour(CyclicBehaviour):
+    agent: LoggerAgent
+
     async def run(self) -> None:
         msg = await self.receive(timeout=9999)
         if msg is not None and msg.body is not None:
@@ -18,6 +25,8 @@ class MessageReceiverBehaviour(CyclicBehaviour):
         msg_type: Optional[str] = msg.get("type")
         if msg_type is None:
             return
+
+        await self.agent.send_ws({"type": "msg", "msg": msg})
 
         match msg_type:
             case "bot-img":

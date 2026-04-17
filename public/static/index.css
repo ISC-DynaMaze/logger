@@ -40,6 +40,24 @@ body {
     }
 }
 
+#receiver {
+    .messages {
+        display: flex;
+        flex-direction: column;
+        max-height: 10em;
+        overflow-y: auto;
+        border: border solid 1px;
+
+        .message {
+            padding: .2em .4em;
+
+            &:nth-child(even) {
+                background-color: rgb(238, 238, 238);
+            }
+        }
+    }
+}
+
 label {
     font-style: italic;
 }

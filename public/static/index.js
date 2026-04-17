@@ -1,8 +1,21 @@
 /** @type {WebSocket} */
 var ws
 
-function onWsMessage(ws, event) {
-    console.log(event)
+function onWsMessage(event) {
+    const msg = JSON.parse(event.data)
+    switch (msg.type) {
+        case "msg":
+            logMessage(msg.msg)
+            break
+    }
+}
+
+function logMessage(msg) {
+    const list = document.querySelector("#receiver .messages")
+    const div = document.createElement("div")
+    div.classList.add("message")
+    div.innerText = JSON.stringify(msg)
+    list.appendChild(div)
 }
 
 function initSender() {
