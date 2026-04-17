@@ -1,10 +1,16 @@
+from pathlib import Path
+
 from aiohttp import web
 from spade.agent import Agent
 
 from agent.message_receiver import MessageReceiverBehaviour
 
 class LoggerAgent(Agent):
+    PUBLIC_DIR = Path(__file__).parent.parent / "public"
+
     async def setup(self):
+        self.web.app.middlewares.append(self.index_middleware)
+        self.web.app.router.add_static("/", self.PUBLIC_DIR, name="public")
         self.web.app.router.add_get("/api/status", self.handle_api_status)
         self.web.app.router.add_get("/ws", self.handle_websocket)
 
@@ -13,6 +19,18 @@ class LoggerAgent(Agent):
         receiver = MessageReceiverBehaviour()
         self.add_behaviour(receiver)
     
+    @web.middleware
+    async def index_middleware(self, request, handler):
+        rel_path = Path(request.path).relative_to("/")
+        full_path = self.PUBLIC_DIR / rel_path
+        if not full_path.exists():
+            return web.HTTPNotFound()
+        if full_path.is_dir():
+            full_path /= "index.html"
+            if not full_path.exists():
+                return web.HTTPNotFound()
+        return web.FileResponse(full_path)
+
     async def handle_api_status(self, request):
         data = {
             "status": "running",
