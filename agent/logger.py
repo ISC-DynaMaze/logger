@@ -1,0 +1,33 @@
+from aiohttp import web
+from spade.agent import Agent
+
+from agent.message_receiver import MessageReceiverBehaviour
+
+class LoggerAgent(Agent):
+    async def setup(self):
+        self.web.app.router.add_get("/api/status", self.handle_api_status)
+        self.web.app.router.add_get("/ws", self.handle_websocket)
+
+        self.web.start(hostname="127.0.0.1", port=10000)
+
+        receiver = MessageReceiverBehaviour()
+        self.add_behaviour(receiver)
+    
+    async def handle_api_status(self, request):
+        data = {
+            "status": "running",
+            "jid": str(self.jid),
+            "behaviours": len(self.behaviours)
+        }
+        return web.json_response(data)
+
+    async def handle_websocket(self, request):
+        ws = web.WebSocketResponse()
+        await ws.prepare(request)
+        
+        async for msg in ws:
+            if msg.type == web.WSMsgType.TEXT:
+                await ws.send_str(f"Server received: {msg.data}")
+            elif msg.type == web.WSMsgType.ERROR:
+                print(f"WS connection closed with exception {ws.exception()}")
+        return ws
