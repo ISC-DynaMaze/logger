@@ -20,6 +20,7 @@ body {
         display: flex;
         flex-direction: column;
         gap: .8em;
+        overflow-x: hidden;
 
         .content {
             display: flex;
@@ -45,11 +46,15 @@ body {
         display: flex;
         flex-direction: column;
         max-height: 10em;
+        overflow-x: hidden;
         overflow-y: auto;
-        border: border solid 1px;
+        border: black solid 1px;
+        min-height: 1em;
+        white-space: nowrap;
 
         .message {
             padding: .2em .4em;
+            text-overflow: ellipsis;
 
             &:nth-child(even) {
                 background-color: rgb(238, 238, 238);
