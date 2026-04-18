@@ -30,4 +30,4 @@ class MessageReceiverBehaviour(CyclicBehaviour):
 
         match msg_type:
             case "bot-img":
-                pass
+                await self.agent.send_ws({"type": "bot-img", "img": msg["img"]})

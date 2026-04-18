@@ -7,6 +7,9 @@ function onWsMessage(event) {
         case "msg":
             logMessage(msg.msg)
             break
+        case "bot-img":
+            displayImage(msg.img)
+            break
     }
 }
 
@@ -16,6 +19,12 @@ function logMessage(msg) {
     div.classList.add("message")
     div.innerText = JSON.stringify(msg)
     list.appendChild(div)
+}
+
+function displayImage(img) {
+    /** @type {HTMLImageElement} */
+    const node = document.getElementById("image-display")
+    node.src = `data:image/png;base64,${img}`
 }
 
 function initSender() {
