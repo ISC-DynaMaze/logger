@@ -16,7 +16,7 @@ for log_name in ["spade", "aioxmpp", "xmpp"]:
 
 async def main():
     print("Hello from main")
-    agent = LoggerAgent("logger@localhost", "plsnohack")
+    agent = LoggerAgent("logger@isc-coordinator.lan", "plsnohack")
     await agent.start()
     print("Agent started")
 
