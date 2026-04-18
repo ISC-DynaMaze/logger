@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from aiohttp import web
@@ -13,6 +14,7 @@ class LoggerAgent(Agent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ws_clients: set[web.WebSocketResponse] = set()
+        self.logger: logging.Logger = logging.getLogger("LoggerAgent")
 
     async def setup(self):
         self.web.app.middlewares.append(self.index_middleware)
@@ -53,7 +55,7 @@ class LoggerAgent(Agent):
                 if msg.type == web.WSMsgType.TEXT:
                     await self.handle_ws_msg(msg.json())
                 elif msg.type == web.WSMsgType.ERROR:
-                    print(f"WS connection closed with exception {ws.exception()}")
+                    self.logger.warning(f"WS connection closed with exception {ws.exception()}")
         finally:
             self.ws_clients.remove(ws)
 
